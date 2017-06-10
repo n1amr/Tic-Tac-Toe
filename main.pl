@@ -1,4 +1,7 @@
-initial_state([[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]).
+initial_state([
+    [' ', ' ', ' '],
+    [' ', ' ', ' '],
+    [' ', ' ', ' ']]).
 
 print_board([L1, L2, L3]) :-
     print_line_separator,
@@ -34,8 +37,6 @@ get_cell(S, [X, Y], Symbol) :-
 empty_cell(S, C) :-
     get_cell(S, C, ' ').
 
-has_empty_cells(S) :-
-    member(Line, S), member(' ', Line).
 
 read_coordinates([X, Y]) :-
     read(X1), X is X1 - 1,
@@ -44,11 +45,46 @@ read_coordinates([X, Y]) :-
 opposite('X', 'O').
 opposite('O', 'X').
 
+wins(S, Symbol) :-
+    member([Symbol, Symbol, Symbol], S).
+
+wins([L1, L2, L3], Symbol) :-
+    append(A1, [Symbol|_], L1), length(A1, N),
+    append(A2, [Symbol|_], L2), length(A2, N),
+    append(A3, [Symbol|_], L3), length(A3, N).
+
+wins(S, Symbol) :-
+    get_cell(S, [1, 1], Symbol),
+    get_cell(S, [2, 2], Symbol),
+    get_cell(S, [3, 3], Symbol).
+
+wins(S, Symbol) :-
+    get_cell(S, [1, 3], Symbol),
+    get_cell(S, [2, 2], Symbol),
+    get_cell(S, [3, 1], Symbol).
+
+coordinate([X, Y]) :-
+    member(X, [1, 2, 3]),
+    member(Y, [1, 2, 3]).
+
+player('X').
+player('O').
+
+has_empty_cells(S) :-
+    member(Line, S), member(' ', Line).
+
+game_finished(S) :-
+    not(has_empty_cells(S)), !.
+
+game_finished(S) :-
+    player(Symbol),
+    wins(S, Symbol), !.
+
 start_game(S, _Turn) :-
-    not(has_empty_cells(S)).
+    game_finished(S), !.
 
 start_game(S, Turn) :-
-    has_empty_cells(S),
+    not(game_finished(S)),
     read_coordinates(C),
     empty_cell(S, C),
     set_cell(S, NS, C, Turn),
