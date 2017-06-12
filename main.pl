@@ -210,6 +210,7 @@ next_turn(State) :-
 
 play :-
     write('========================  New Game  =========================='), nl,
+    write('Note: Moves are entered in the following format "R. C." where R, C is the row and column numbers (1-indexed).'), nl,
     initial_state(State),
     State = state(Board, _Turn),
     print_board(Board),
